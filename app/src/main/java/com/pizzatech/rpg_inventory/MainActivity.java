@@ -23,12 +23,16 @@ import com.pizzatech.rpg_inventory.adapters.DrawerItemAdapter;
 import com.pizzatech.rpg_inventory.objects.DrawerItem;
 import com.pizzatech.rpg_inventory.objects.PlayerCharacter;
 import com.pizzatech.rpg_inventory.fragments.AboutFragment;
+import com.pizzatech.rpg_inventory.fragments.NewPCFragment;
+import com.pizzatech.rpg_inventory.database.DBAccess;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     Resources res;
+
+    public static DBAccess dbAccess;
 
     Fragment fragment;
 
@@ -47,30 +51,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout._main);
 
         res = getResources();
+        dbAccess = DBAccess.getInstance(this);
 
-        // TODO: Get PCs list
-        playerCharactersList.add(new PlayerCharacter(1, "Dave", "Best Campaign"));
+        updateDrawer();
 
-        // TODO: Move drawer intialization to another function because it will need to refresh
         // Initialize drawer
         leftDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        // Loop through playerCharactersList and add to the drawer
-        for (int i = 0; i < playerCharactersList.size(); i++) {
-            // TODO: custom images?
-            PlayerCharacter pc = playerCharactersList.get(i);
-            leftDrawerItems.add(new DrawerItem(R.drawable.ic_person, pc.getName(), "PC", pc.getId()));
-        }
-
-        // Add New Character DrawerItem
-        leftDrawerItems.add(new DrawerItem(R.drawable.ic_add_circle_outline, "New Character", "About"));
-
-        // Add About DrawerItem
-        leftDrawerItems.add(new DrawerItem(R.drawable.ic_info_outline, "About", "About"));
-
-        leftDrawerList = (ListView) findViewById(R.id.left_drawer);
-        leftDrawerItemAdapter = new DrawerItemAdapter(this, R.layout.drawer_list_item, leftDrawerItems);
-        leftDrawerList.setAdapter(leftDrawerItemAdapter);
         leftDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // Action bar drawer toggle
@@ -95,11 +81,7 @@ public class MainActivity extends AppCompatActivity {
         // Default to First Fragment
         selectItem(0);
 
-        // Ads
-        MobileAds.initialize(this, res.getString(R.string.banner_ad_app_id));
-        AdView adView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        adView.loadAd(adRequest);
+        doAdStuff();
     }
 
     // Drawer stuff
@@ -132,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
         String fragType = leftDrawerItems.get(position).getFragType();
 
+        // TODO: Uncomment once fragments are set up
         switch (fragType) {
             case "About":
                 fragment = new AboutFragment();
@@ -139,6 +122,12 @@ public class MainActivity extends AppCompatActivity {
             case "PC":
                 fragment = new AboutFragment();
                 //fragment = new InventoryFragment(leftDrawerItems.get(position).getPCId());
+                break;
+            case "New PC":
+                fragment = new NewPCFragment();
+                Bundle bundaru = new Bundle();
+                bundaru.putInt("ID", -1);
+                fragment.setArguments(bundaru);
                 break;
         }
 
@@ -168,5 +157,40 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(Intent.ACTION_VIEW,
                     Uri.parse("http://play.google.com/store/apps/details?id=" + this.getPackageName())));
         }
+    }
+
+    public void doAdStuff() {
+        // Ads
+        MobileAds.initialize(this, res.getString(R.string.banner_ad_app_id));
+        AdView adView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+    }
+
+    public void updateDrawer() {
+        // Clear so we don't just keep adding (yes this was a bug at one point)
+        playerCharactersList.clear();
+        leftDrawerItems.clear();
+
+        dbAccess.open();
+        playerCharactersList = dbAccess.getAllCharacters();
+        dbAccess.close();
+
+        // Loop through playerCharactersList and add to the drawer
+        for (int i = 0; i < playerCharactersList.size(); i++) {
+            // TODO: custom images?
+            PlayerCharacter pc = playerCharactersList.get(i);
+            leftDrawerItems.add(new DrawerItem(R.drawable.ic_person, pc.getName(), "PC", pc.getId()));
+        }
+
+        // Add New Character DrawerItem
+        leftDrawerItems.add(new DrawerItem(R.drawable.ic_add_circle_outline, "New Character", "New PC"));
+
+        // Add About DrawerItem
+        leftDrawerItems.add(new DrawerItem(R.drawable.ic_info_outline, "About", "About"));
+
+        leftDrawerList = (ListView) findViewById(R.id.left_drawer);
+        leftDrawerItemAdapter = new DrawerItemAdapter(this, R.layout.drawer_list_item, leftDrawerItems);
+        leftDrawerList.setAdapter(leftDrawerItemAdapter);
     }
 }

@@ -11,14 +11,12 @@
     <string name="about_text">Feel free to make suggestions as comments on the Play Store! \n</string>
     <string name="about_rate">Rate this app</string>
 
-    <string-array name="left_drawer_items_strings">
-        <item>Treasure Hoard Roller</item>
-        <item>Individual Loot Roller</item>
-        <item>Encounter Planner</item>
-        <item>About</item>
-    </string-array>
-
     <string name="drawer_open">Open</string>
-    <string name="drawer_close">Close</string>-
+    <string name="drawer_close">Close</string>
+
+    <string name="new_pc_instruction_text">Use this page to add a new PC</string>
+    <string name="new_pc_name_label_text">Name:</string>
+    <string name="new_pc_campaign_label_text">Campaign:</string>
+    <string name="new_pc_confirm_btn_text">Confirm</string>
 
 </resources>
