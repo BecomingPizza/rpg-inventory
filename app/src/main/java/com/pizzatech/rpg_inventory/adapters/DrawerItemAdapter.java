@@ -12,6 +12,8 @@ import android.widget.TextView;
 import com.pizzatech.rpg_inventory.R;
 import com.pizzatech.rpg_inventory.objects.DrawerItem;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 /**
@@ -57,6 +59,12 @@ public class DrawerItemAdapter extends ArrayAdapter<DrawerItem> {
             if (iv != null) {
                 iv.setImageResource(di.getImg());
             }
+        }
+
+        String campaign = di.getCampaign();
+        if (campaign != null) {
+            TextView stv = (TextView) v.findViewById(R.id.drawer_item_subtext);
+            stv.setText(campaign);
         }
 
         return v;

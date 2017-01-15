@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < playerCharactersList.size(); i++) {
             // TODO: custom images?
             PlayerCharacter pc = playerCharactersList.get(i);
-            leftDrawerItems.add(new DrawerItem(R.drawable.ic_person, pc.getName(), "PC", pc.getId()));
+            leftDrawerItems.add(new DrawerItem(R.drawable.ic_person, pc.getName(), "PC", pc.getId(), pc.getCampaign()));
         }
 
         // Add New Character DrawerItem

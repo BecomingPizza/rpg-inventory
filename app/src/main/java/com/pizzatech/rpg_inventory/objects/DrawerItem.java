@@ -12,20 +12,25 @@ public class DrawerItem {
     private String str;
     private String fragType;
     private Integer PCId;
+    private String campaign;
 
     public DrawerItem(int img, String str, String fragType) {
         super();
         this.img = img;
         this.str = str;
         this.fragType = fragType;
+        this.PCId = null;
+        this.campaign = null;
     }
 
-    public DrawerItem(int img, String str, String fragType, Integer pc) {
+    // Special thingamy for PCs as they have some extra functionality
+    public DrawerItem(int img, String str, String fragType, Integer pc, String campaign) {
         super();
         this.img = img;
         this.str = str;
         this.fragType = fragType;
         this.PCId = pc;
+        this.campaign = campaign;
     }
     public int getImg () {
         return img;
@@ -41,5 +46,9 @@ public class DrawerItem {
 
     public Integer getPCId () {
         return PCId;
+    }
+
+    public String getCampaign () {
+        return campaign;
     }
 }
