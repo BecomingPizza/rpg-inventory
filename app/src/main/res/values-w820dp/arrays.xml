@@ -1,0 +1,8 @@
+<resources>
+    <integer-array name="left_drawer_items_imgs">
+        <item>@drawable/ic_info_outline</item>
+        <item>@drawable/ic_info_outline</item>
+        <item>@drawable/ic_info_outline</item>
+        <item>@drawable/ic_info_outline</item>
+    </integer-array>
+</resources>

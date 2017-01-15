@@ -1,3 +1,24 @@
 <resources>
-    <string name="app_name">rpg-inventory</string>
+    <string name="app_name">RPG Inventory</string>
+
+    <!-- TODO get actual IDs for this app -->
+    <string name ="banner_ad_app_id">ca-app-pub-8764405956249464~9611241432</string>
+    // TEST AD ID - swap over before release
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    // LIVE AD ID - do not enable for testing!
+    <!-- <string name="banner_ad_unit_id">ca-app-pub-8764405956249464/2087974638</string> -->
+
+    <string name="about_text">Feel free to make suggestions as comments on the Play Store! \n</string>
+    <string name="about_rate">Rate this app</string>
+
+    <string-array name="left_drawer_items_strings">
+        <item>Treasure Hoard Roller</item>
+        <item>Individual Loot Roller</item>
+        <item>Encounter Planner</item>
+        <item>About</item>
+    </string-array>
+
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>-
+
 </resources>
