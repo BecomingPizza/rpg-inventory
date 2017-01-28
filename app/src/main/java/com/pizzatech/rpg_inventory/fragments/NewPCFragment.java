@@ -1,12 +1,18 @@
 package com.pizzatech.rpg_inventory.fragments;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -92,13 +98,42 @@ public class NewPCFragment extends Fragment {
 
             dbAccess.close();
 
+            // Refresh Drawer
             ((MainActivity)getActivity()).updateDrawer();
 
-            // TODO: Open Inventory Fragment for new/updated character
+            // Move to inventory fragment
+            String actionBarText = name;
+            if (!campaign.equals("")) {
+                actionBarText += " (" + campaign + ")";
+            }
+            swapToInventoryFragment(actionBarText, PCID);
+
+            // Close teh keyboard
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
 
         } else {
             Toast.makeText(v.getContext(), "Name is required", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    // Open Inventory Fragment for new/updated character
+    private void swapToInventoryFragment(String actionBarText, Integer id) {
+        // Create a new fragment
+        FragmentManager fragMan = getFragmentManager();
+        FragmentTransaction fragTran = fragMan.beginTransaction();
+
+        Fragment fragment = new InventoryFragment();
+        Bundle bundaru = new Bundle();
+        bundaru.putInt("ID", id);
+        fragment.setArguments(bundaru);
+
+        fragTran.replace(R.id.content_frame, fragment);
+        fragTran.commit();
+
+        getActivity().setTitle(actionBarText);
+
     }
 
 }
