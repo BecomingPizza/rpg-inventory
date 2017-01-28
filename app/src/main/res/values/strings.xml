@@ -14,7 +14,7 @@
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
 
-    <string name="new_pc_instruction_text">Use this page to add a new PC</string>
+    <string name="new_pc_instruction_text">Use this page to add or update a PC</string>
     <string name="new_pc_name_label_text">Name:</string>
     <string name="new_pc_campaign_label_text">Campaign:</string>
     <string name="new_pc_confirm_btn_text">Confirm</string>

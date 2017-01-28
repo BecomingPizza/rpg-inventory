@@ -73,6 +73,11 @@ public class DBAccess {
         return pc;
     }
 
+    public void deleteCharacter (Integer id) {
+        String sql = "DELETE FROM character WHERE ID = " + id;
+        database.execSQL(sql);
+    }
+
     public ArrayList<PlayerCharacter> getAllCharacters () {
         ArrayList<PlayerCharacter> pcs = new ArrayList<>();
 

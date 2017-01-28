@@ -36,6 +36,14 @@ public class DrawerItem {
         return img;
     }
 
+    public String getActionBarStr () {
+        if (!campaign.equals("")) {
+            return str + " (" + campaign + ")";
+        } else {
+            return str;
+        }
+    }
+
     public String getStr () {
         return str;
     }

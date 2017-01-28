@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,6 +21,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.pizzatech.rpg_inventory.adapters.DrawerItemAdapter;
+import com.pizzatech.rpg_inventory.fragments.InventoryFragment;
 import com.pizzatech.rpg_inventory.objects.DrawerItem;
 import com.pizzatech.rpg_inventory.objects.PlayerCharacter;
 import com.pizzatech.rpg_inventory.fragments.AboutFragment;
@@ -113,21 +115,29 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragTran = fragMan.beginTransaction();
 
         String fragType = leftDrawerItems.get(position).getFragType();
+        String actionBarText = "";
+
+        Log.e("FragType:", fragType);
 
         // TODO: Uncomment once fragments are set up
         switch (fragType) {
             case "About":
                 fragment = new AboutFragment();
+                actionBarText = leftDrawerItems.get(position).getStr();
                 break;
             case "PC":
-                fragment = new AboutFragment();
-                //fragment = new InventoryFragment(leftDrawerItems.get(position).getPCId());
+                fragment = new InventoryFragment();
+                Bundle bundaro = new Bundle();
+                bundaro.putInt("ID", leftDrawerItems.get(position).getPCId());
+                fragment.setArguments(bundaro);
+                actionBarText = leftDrawerItems.get(position).getActionBarStr();
                 break;
             case "New PC":
                 fragment = new NewPCFragment();
                 Bundle bundaru = new Bundle();
                 bundaru.putInt("ID", -1);
                 fragment.setArguments(bundaru);
+                actionBarText = leftDrawerItems.get(position).getStr();
                 break;
         }
 
@@ -135,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         fragTran.commit();
 
         leftDrawerList.setItemChecked(position, true);
-        setTitle(leftDrawerItems.get(position).getStr());
+        setTitle(actionBarText);
         leftDrawerLayout.closeDrawer(leftDrawerList);
     }
 
