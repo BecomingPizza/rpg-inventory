@@ -119,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("FragType:", fragType);
 
-        // TODO: Uncomment once fragments are set up
         switch (fragType) {
             case "About":
                 fragment = new AboutFragment();

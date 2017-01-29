@@ -27,7 +27,7 @@ import static com.pizzatech.rpg_inventory.MainActivity.dbAccess;
  *
  * Add a new PC & then shove the user straight into an InventoryFragment for that PC
  *
- * Also handle edits?
+ * Also handles edits
  */
 
 public class NewPCFragment extends Fragment {

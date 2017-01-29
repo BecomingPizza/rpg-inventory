@@ -26,6 +26,9 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.google.firebase:firebase-ads:10.0.1'
-    compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
+    compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+' // SQL Lib
+    compile ('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.10.3@aar'){
+        transitive=true
+    } // Fancy list Lib
     testCompile 'junit:junit:4.12'
 }
