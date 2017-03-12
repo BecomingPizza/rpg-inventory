@@ -27,8 +27,10 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.google.firebase:firebase-ads:10.0.1'
     compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+' // SQL Lib
+    compile 'com.getbase:floatingactionbutton:1.10.1' // Button Lib
     compile ('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.10.3@aar'){
         transitive=true
     } // Fancy list Lib
     testCompile 'junit:junit:4.12'
+    compile 'com.android.support:design:25.2.0'
 }

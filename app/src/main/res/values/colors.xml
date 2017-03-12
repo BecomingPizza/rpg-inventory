@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#303030</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#424242</color>
+    <color name="colorAccent">#4ca943</color>
     <color name="textBlack">#000000</color>
     <color name="whiteAF">#FFFFFF</color>
     <color name="notSoWhiteAF">#BBBBBB</color>
@@ -32,4 +32,14 @@
     <color name="snackbar_action_color_done">#ffccccff</color>
 
     <color name="expandable_item_indicator_color">#42000000</color>
+
+    <color name="black_semi_transparent">#B2000000</color>
+    <color name="half_black">#808080</color>
+    <color name="white">#fafafa</color>
+    <color name="white_pressed">#f1f1f1</color>
+
+
+    <color name="green">#4ca943</color>
+    <color name="green_pressed">#74af6f</color>
+
 </resources>
