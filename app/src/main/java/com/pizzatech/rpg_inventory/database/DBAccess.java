@@ -4,10 +4,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.v4.util.Pair;
 
+import com.pizzatech.rpg_inventory.objects.AbstractInventoryData;
+import com.pizzatech.rpg_inventory.objects.InventoryData;
 import com.pizzatech.rpg_inventory.objects.PlayerCharacter;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by Ashley on 26/09/2016.
@@ -96,5 +101,63 @@ public class DBAccess {
 
         return pcs;
 
+    }
+
+    public List<Pair<AbstractInventoryData.GroupData, List<AbstractInventoryData.ChildData>>> getInventory(Integer PCID) {
+
+        List<Pair<AbstractInventoryData.GroupData, List<AbstractInventoryData.ChildData>>> data = new LinkedList<>();
+
+        String query1 = "SELECT * FROM container WHERE CHARACTER_ID = " + PCID;
+        Cursor grpCursor = database.rawQuery(query1, null);
+        if (grpCursor.moveToFirst()) {
+
+            while (!grpCursor.isAfterLast()) {
+
+                Integer grpId = grpCursor.getInt(0);
+                String grpName = grpCursor.getString(2);
+                Integer grpCapacity = grpCursor.getInt(3);
+                Boolean grpOnPerson;
+                if (grpCursor.getInt(4) == 1) {
+                    grpOnPerson = true;
+                } else {
+                    grpOnPerson = false;
+                }
+                Integer grpNextChildId = grpCursor.getInt(5);
+
+                InventoryData.ConcreteGroupData group = new InventoryData.ConcreteGroupData(grpId, grpName, grpCapacity, grpOnPerson, grpNextChildId);
+
+                String query2 = "SELECT * FROM items WHERE CONTAINER_ID = " + grpId;
+                Cursor childCursor = database.rawQuery(query2, null);
+
+                List<AbstractInventoryData.ChildData> children = new ArrayList<>();
+
+                if (childCursor.moveToFirst()) {
+                    while (!childCursor.isAfterLast()) {
+
+                        Integer childId = childCursor.getInt(1);
+                        String childName = childCursor.getString(3);
+                        String childDesc = childCursor.getString(4);
+                        Integer childWeight = childCursor.getInt(5);
+                        Integer childQuantity = childCursor.getInt(6);
+
+                        children.add(new InventoryData.ConcreteChildData(childId, childName, childDesc, childWeight, childQuantity));
+
+                        childCursor.moveToNext();
+                    }
+                }
+
+                childCursor.close();
+
+
+                data.add(new Pair<AbstractInventoryData.GroupData, List<AbstractInventoryData.ChildData>>(group, children));
+
+                grpCursor.moveToNext();
+            }
+
+        }
+
+        grpCursor.close();
+
+        return data;
     }
 }

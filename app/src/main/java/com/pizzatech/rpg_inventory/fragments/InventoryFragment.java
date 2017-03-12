@@ -93,7 +93,8 @@ public class InventoryFragment extends Fragment {
         Bundle bundaru = getArguments();
         PCID = bundaru.getInt("ID");
 
-        invData = new InventoryData();
+        // TODO: Data goes in here?
+        invData = new InventoryData(PCID);
 
         // Set up the recycler
         invRecyclerView = (RecyclerView) v.findViewById(R.id.inventory_recycler_list_view);

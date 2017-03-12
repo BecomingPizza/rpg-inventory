@@ -11,6 +11,8 @@ public class PlayerCharacter {
     private String name;
     private String campaign;
 
+    // TODO: Add player total capacity
+
     public PlayerCharacter(Integer id, String name, String campaign) {
         super();
         this.id = id;

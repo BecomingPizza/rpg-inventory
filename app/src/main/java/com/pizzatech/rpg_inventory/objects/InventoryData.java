@@ -8,8 +8,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.pizzatech.rpg_inventory.MainActivity.dbAccess;
+
+
 /**
  * Created by Ashley on 29/01/2017.
+ *
+ * Hold all the inventory data init u get me bruv
  */
 
 public class InventoryData extends AbstractInventoryData {
@@ -24,28 +29,15 @@ public class InventoryData extends AbstractInventoryData {
     private long mLastRemovedChildParentGroupId = -1;
     private int mLastRemovedChildPosition = -1;
 
-    public InventoryData() {
-        final String groupItems = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        final String childItems = "abc";
 
-        mData = new LinkedList<>();
 
-        for (int i = 0; i < groupItems.length(); i++) {
-            //noinspection UnnecessaryLocalVariable
-            final long groupId = i;
-            final String groupText = Character.toString(groupItems.charAt(i));
-            final ConcreteGroupData group = new ConcreteGroupData(groupId, groupText);
-            final List<ChildData> children = new ArrayList<>();
+    public InventoryData(Integer PCID) {
 
-            for (int j = 0; j < childItems.length(); j++) {
-                final long childId = group.generateNewChildId();
-                final String childText = Character.toString(childItems.charAt(j));
+        // Load ze inventory!
+        dbAccess.open();
+        mData = dbAccess.getInventory(PCID);
+        dbAccess.close();
 
-                children.add(new ConcreteChildData(childId, childText));
-            }
-
-            mData.add(new Pair<GroupData, List<ChildData>>(group, children));
-        }
     }
 
     @Override
@@ -195,15 +187,21 @@ public class InventoryData extends AbstractInventoryData {
 
     public static final class ConcreteGroupData extends GroupData {
 
-        private final long mId;
+        private final Integer mId;
         private final String mText;
+        private final Integer mCapacity;
+        private final boolean mOnPerson; // Is the character carrying this, or is it on a horse/wagon/octopus?
         private boolean mPinned;
-        private long mNextChildId;
+        private Integer mNextChildId;
 
-        ConcreteGroupData(long id, String text) {
+        // id, text, weight capacity
+
+        public ConcreteGroupData(Integer id, String text, Integer capacity, boolean onPerson, Integer nextChildId) {
             mId = id;
             mText = text;
-            mNextChildId = 0;
+            mCapacity = capacity;
+            mOnPerson = onPerson;
+            mNextChildId = nextChildId;
         }
 
         @Override
@@ -221,6 +219,14 @@ public class InventoryData extends AbstractInventoryData {
             return mText;
         }
 
+        public Integer getCapacity() {
+            return mCapacity;
+        }
+
+        public boolean isOnPerson() {
+            return mOnPerson;
+        }
+
         @Override
         public void setPinned(boolean pinnedToSwipeLeft) {
             mPinned = pinnedToSwipeLeft;
@@ -231,8 +237,8 @@ public class InventoryData extends AbstractInventoryData {
             return mPinned;
         }
 
-        public long generateNewChildId() {
-            final long id = mNextChildId;
+        public Integer generateNewChildId() {
+            final Integer id = mNextChildId;
             mNextChildId += 1;
             return id;
         }
@@ -242,11 +248,19 @@ public class InventoryData extends AbstractInventoryData {
 
         private long mId;
         private final String mText;
+        private final String mSubText;
+        private final Integer mQuantity;
+        private final double mWeightPerUnit;
         private boolean mPinned;
 
-        ConcreteChildData(long id, String text) {
+        // id, main text, sub text, quantity, weight per unit
+
+        public ConcreteChildData(long id, String text, String subText, Integer quantity, double weightPerUnit) {
             mId = id;
             mText = text;
+            mSubText = subText;
+            mQuantity = quantity;
+            mWeightPerUnit = weightPerUnit;
         }
 
         @Override
@@ -257,6 +271,22 @@ public class InventoryData extends AbstractInventoryData {
         @Override
         public String getText() {
             return mText;
+        }
+
+        public String getSubText() {
+            return mSubText;
+        }
+
+        public Integer getQuantity() {
+            return mQuantity;
+        }
+
+        public double getWeightPerUnit() {
+            return mWeightPerUnit;
+        }
+
+        public double getTotalWeight() {
+            return mQuantity * mWeightPerUnit;
         }
 
         @Override
