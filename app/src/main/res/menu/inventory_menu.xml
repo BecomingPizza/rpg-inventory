@@ -1,12 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/action_edit"
+
+    <!-- Buttons for PC -->
+    <item android:id="@+id/action_edit_pc"
         android:icon="@drawable/ic_mode_edit"
-        android:title="Edit PC"
+        android:title="Edit"
         app:showAsAction="ifRoom"/>
-    <item android:id="@+id/action_delete"
+    <item android:id="@+id/action_delete_pc"
         android:icon="@drawable/ic_delete"
-        android:title="Delete PC"
+        android:title="Delete"
         app:showAsAction="ifRoom"/>
+
+    <!-- Buttons for Containers -->
+    <item android:id="@+id/action_delete_container"
+        android:icon="@drawable/ic_delete"
+        android:title="Edit"
+        app:showAsAction="ifRoom"
+        android:visible="false"/>
+    <item android:id="@+id/action_save_container"
+        android:icon="@drawable/ic_action_tick"
+        android:title="Save"
+        app:showAsAction="ifRoom"
+        android:visible="false"/>
+
+    <!-- Buttons for items -->
+    <item android:id="@+id/action_delete_item"
+        android:icon="@drawable/ic_delete"
+        android:title="Edit"
+        app:showAsAction="ifRoom"
+        android:visible="false"/>
+    <item android:id="@+id/action_save_item"
+        android:icon="@drawable/ic_action_tick"
+        android:title="Save"
+        app:showAsAction="ifRoom"
+        android:visible="false"/>
 </menu>

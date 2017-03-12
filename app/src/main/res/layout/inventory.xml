@@ -1,53 +1,266 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/inventory_recycler_list_view"
+    <ViewAnimator
+        android:id="@+id/inventory_animator"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/myRecyclerViewStyle"/>
+        android:layout_height="match_parent">
+
+        <!-- Main bit -->
+        <LinearLayout
+            android:id="@+id/inventory_main_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <android.support.design.widget.CoordinatorLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/inventory_recycler_list_view"
+                    style="@style/myRecyclerViewStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
 
-    <com.getbase.floatingactionbutton.FloatingActionsMenu
-        android:id="@+id/multiple_actions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        fab:fab_addButtonColorNormal="@color/green"
-        fab:fab_addButtonColorPressed="@color/green_pressed"
-        fab:fab_addButtonPlusIconColor="@color/white"
-        fab:fab_labelStyle="@style/menu_labels_style"
-        android:layout_marginBottom="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_gravity="bottom|right"
-        fab:fab_labelsPosition="left">
+                <com.getbase.floatingactionbutton.FloatingActionsMenu
+                    android:id="@+id/multiple_actions"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_gravity="bottom|right"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
+                    fab:fab_addButtonColorNormal="@color/green"
+                    fab:fab_addButtonColorPressed="@color/green_pressed"
+                    fab:fab_addButtonPlusIconColor="@color/white"
+                    fab:fab_labelStyle="@style/menu_labels_style"
+                    fab:fab_labelsPosition="left">
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_add_item"
-            fab:fab_icon="@drawable/ic_sword_white_48dp"
-            fab:fab_colorNormal="@color/green"
-            fab:fab_colorPressed="@color/green_pressed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_title="Add Item"/>
+                    <com.getbase.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/action_add_item"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        fab:fab_colorNormal="@color/green"
+                        fab:fab_colorPressed="@color/green_pressed"
+                        fab:fab_icon="@drawable/ic_sword_white_48dp"
+                        fab:fab_title="Add Item" />
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_add_container"
-            fab:fab_icon="@drawable/ic_package_variant_white_48dp"
-            fab:fab_colorNormal="@color/green"
-            fab:fab_colorPressed="@color/green_pressed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_title="Add Container"/>
+                    <com.getbase.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/action_add_container"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        fab:fab_colorNormal="@color/green"
+                        fab:fab_colorPressed="@color/green_pressed"
+                        fab:fab_icon="@drawable/ic_package_variant_white_48dp"
+                        fab:fab_title="Add Container" />
 
-    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+                </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
-</android.support.design.widget.CoordinatorLayout>
+            </android.support.design.widget.CoordinatorLayout>
+        </LinearLayout>
+
+        <!-- Item bit -->
+        <LinearLayout
+            android:id="@+id/inventory_add_edit_item_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="12dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_package_variant_grey600_36dp" />
+
+                <Spinner
+                    android:id="@+id/inventory_add_edit_item_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+                <!-- Magic EditText solves scaling problems with this one weird trick -->
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_pencil_grey600_36dp" />
+
+                <EditText
+                    android:id="@+id/inventory_add_edit_item_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Item Name" />
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_sort_variant_grey600_36dp" />
+
+                <EditText
+                    android:id="@+id/inventory_add_edit_item_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Description" />
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_weight_grey600_36dp" />
+
+                <EditText
+                    android:id="@+id/inventory_add_edit_item_weight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Weight"
+                    android:inputType="numberDecimal" />
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_pound_grey600_36dp" />
+
+                <EditText
+                    android:id="@+id/inventory_add_edit_item_quantity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Quantity"
+                    android:inputType="numberDecimal" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Container bit -->
+        <LinearLayout
+            android:id="@+id/inventory_add_edit_container_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="12dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_pencil_grey600_36dp" />
+
+                <EditText
+                    android:id="@+id/inventory_add_edit_container_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Container Name" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_weight_grey600_36dp" />
+
+                <EditText
+                    android:id="@+id/inventory_add_edit_container_capacity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Weight Capacity"
+                    android:inputType="numberDecimal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_human_greeting_grey600_36dp" />
+
+                <Switch
+                    android:id="@+id/inventory_add_edit_container_on_person_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:checked="true" />
+
+                <!-- TODO: Listener to swap this on toggle -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:text="Carried"
+                    android:textSize="18dp" />
+
+                <!-- Magic EditText solves scaling problems with this one weird trick -->
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ViewAnimator>
+
+
+</LinearLayout>
 

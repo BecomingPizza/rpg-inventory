@@ -2,6 +2,7 @@ package com.pizzatech.rpg_inventory.adapters;
 
 import android.support.annotation.IntRange;
 import android.support.v4.view.ViewCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultAct
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableItemViewHolder;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractExpandableItemAdapter;
 import com.pizzatech.rpg_inventory.R;
+import com.pizzatech.rpg_inventory.fragments.InventoryFragment;
 import com.pizzatech.rpg_inventory.objects.InventoryData;
 import com.pizzatech.rpg_inventory.utils.DrawableUtils;
 import com.pizzatech.rpg_inventory.utils.ViewUtils;
@@ -44,6 +46,9 @@ public class InventoryRecyclerAdapter
     private RecyclerViewExpandableItemManager invExpandableItemManager;
     private View.OnClickListener invItemViewOnClickListener;
     private EventListener eventListener;
+
+    private InventoryFragment invFragment;
+
 
     public interface EventListener {
         void onItemViewClicked(View v, boolean pinned);
@@ -79,18 +84,22 @@ public class InventoryRecyclerAdapter
         public MyGroupViewHolder(View itemView) {
             super(itemView);
             indicator = (ExpandableItemIndicator) itemView.findViewById(R.id.indicator);
+
+
         }
     }
 
     public class MyChildViewHolder extends MyBaseViewHolder {
         public MyChildViewHolder(View itemView) {
             super(itemView);
+
         }
     }
 
-    public InventoryRecyclerAdapter(RecyclerViewExpandableItemManager expandableItemManager, InventoryData data) {
+    public InventoryRecyclerAdapter(RecyclerViewExpandableItemManager expandableItemManager, InventoryData data, InventoryFragment fragment) {
         invExpandableItemManager = expandableItemManager;
         invData = data;
+        invFragment = fragment;
 
         invItemViewOnClickListener = new View.OnClickListener() {
             @Override
@@ -196,12 +205,20 @@ public class InventoryRecyclerAdapter
     }
 
     @Override
-    public void onBindGroupViewHolder(MyGroupViewHolder holder, int groupPosition, int viewType) {
+    public void onBindGroupViewHolder(MyGroupViewHolder holder, final int groupPosition, int viewType) {
         // group item
         final InventoryData.GroupData item = invData.getGroupItem(groupPosition);
 
         // set listeners
         holder.itemView.setOnClickListener(invItemViewOnClickListener);
+
+        holder.itemView.findViewById(android.R.id.text1).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                invFragment.editContainer(groupPosition);
+                return false;
+            }
+        });
 
         // set text
         holder.mTextView.setText(item.getText());
@@ -241,13 +258,20 @@ public class InventoryRecyclerAdapter
     }
 
     @Override
-    public void onBindChildViewHolder(MyChildViewHolder holder, int groupPosition, int childPosition, int viewType) {
+    public void onBindChildViewHolder(MyChildViewHolder holder, final int groupPosition, final int childPosition, int viewType) {
         // child item
         final InventoryData.ChildData item = invData.getChildItem(groupPosition, childPosition);
 
         // set listeners
         // (if the item is *pinned*, click event comes to the itemView)
         holder.itemView.setOnClickListener(invItemViewOnClickListener);
+        holder.itemView.findViewById(android.R.id.text1).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                invFragment.editItem(groupPosition, childPosition);
+                return false;
+            }
+        });
 
         // set text
         holder.mTextView.setText(item.getText());
