@@ -16,11 +16,11 @@ public abstract class AbstractInventoryData {
 
     public static abstract class GroupData extends BaseData {
         public abstract boolean isSectionHeader();
-        public abstract long getGroupId();
+        public abstract Integer getGroupId();
     }
 
     public static abstract class ChildData extends BaseData {
-        public abstract long getChildId();
+        public abstract Integer getChildId();
     }
 
     public abstract int getGroupCount();

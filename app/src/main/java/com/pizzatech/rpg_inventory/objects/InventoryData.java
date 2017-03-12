@@ -82,6 +82,16 @@ public class InventoryData extends AbstractInventoryData {
 
         final Pair<GroupData, List<ChildData>> item = mData.remove(fromGroupPosition);
         mData.add(toGroupPosition, item);
+
+        dbAccess.open();
+
+        // EVERYTHING NEEDS TO UPDATE TO MAINTAIN ORDER
+        for (int i = 0; i < mData.size(); i++ ) {
+            dbAccess.updateContainerPosition(((ConcreteGroupData) mData.get(i).first).getDbId(), i);
+        }
+
+        dbAccess.close();
+
     }
 
     @Override
@@ -97,11 +107,21 @@ public class InventoryData extends AbstractInventoryData {
 
         if (toGroupPosition != fromGroupPosition) {
             // assign a new ID
-            final long newId = ((ConcreteGroupData) toGroup.first).generateNewChildId();
+            final Integer newId = ((ConcreteGroupData) toGroup.first).generateNewChildId();
             item.setChildId(newId);
         }
 
         toGroup.second.add(toChildPosition, item);
+
+        // Databasey shiz
+        Integer grpDbId = ((ConcreteGroupData)toGroup.first).getDbId();
+        dbAccess.open();
+
+        for (int i = 0; i < toGroup.second.size(); i++) {
+            dbAccess.updateItemPoaition(grpDbId, ((ConcreteChildData)toGroup.second.get(i)).getDbId(), i);
+        }
+
+        dbAccess.close();
     }
 
     @Override
@@ -193,19 +213,21 @@ public class InventoryData extends AbstractInventoryData {
         private final boolean mOnPerson; // Is the character carrying this, or is it on a horse/wagon/octopus?
         private boolean mPinned;
         private Integer mNextChildId;
+        private Integer mDbId;
 
         // id, text, weight capacity
 
-        public ConcreteGroupData(Integer id, String text, Integer capacity, boolean onPerson, Integer nextChildId) {
+        public ConcreteGroupData(Integer id, String text, Integer capacity, boolean onPerson, Integer nextChildId, Integer dbId) {
             mId = id;
             mText = text;
             mCapacity = capacity;
             mOnPerson = onPerson;
             mNextChildId = nextChildId;
+            mDbId = dbId;
         }
 
         @Override
-        public long getGroupId() {
+        public Integer getGroupId() {
             return mId;
         }
 
@@ -227,6 +249,10 @@ public class InventoryData extends AbstractInventoryData {
             return mOnPerson;
         }
 
+        public Integer getDbId() {
+            return mDbId;
+        }
+
         @Override
         public void setPinned(boolean pinnedToSwipeLeft) {
             mPinned = pinnedToSwipeLeft;
@@ -246,25 +272,27 @@ public class InventoryData extends AbstractInventoryData {
 
     public static final class ConcreteChildData extends ChildData {
 
-        private long mId;
+        private Integer mId;
         private final String mText;
         private final String mSubText;
         private final Integer mQuantity;
         private final double mWeightPerUnit;
         private boolean mPinned;
+        private Integer mDbId;
 
         // id, main text, sub text, quantity, weight per unit
 
-        public ConcreteChildData(long id, String text, String subText, Integer quantity, double weightPerUnit) {
+        public ConcreteChildData(Integer id, String text, String subText, Integer quantity, double weightPerUnit, Integer dbId) {
             mId = id;
             mText = text;
             mSubText = subText;
             mQuantity = quantity;
             mWeightPerUnit = weightPerUnit;
+            mDbId = dbId;
         }
 
         @Override
-        public long getChildId() {
+        public Integer getChildId() {
             return mId;
         }
 
@@ -289,6 +317,10 @@ public class InventoryData extends AbstractInventoryData {
             return mQuantity * mWeightPerUnit;
         }
 
+        public Integer getDbId() {
+            return mDbId;
+        }
+
         @Override
         public void setPinned(boolean pinned) {
             mPinned = pinned;
@@ -299,7 +331,7 @@ public class InventoryData extends AbstractInventoryData {
             return mPinned;
         }
 
-        public void setChildId(long id) {
+        public void setChildId(Integer id) {
             this.mId = id;
         }
     }

@@ -107,13 +107,13 @@ public class DBAccess {
 
         List<Pair<AbstractInventoryData.GroupData, List<AbstractInventoryData.ChildData>>> data = new LinkedList<>();
 
-        String query1 = "SELECT * FROM container WHERE CHARACTER_ID = " + PCID;
+        String query1 = "SELECT * FROM container WHERE CHARACTER_ID = " + PCID + " ORDER BY LIST_ORDER ASC";
         Cursor grpCursor = database.rawQuery(query1, null);
         if (grpCursor.moveToFirst()) {
 
             while (!grpCursor.isAfterLast()) {
 
-                Integer grpId = grpCursor.getInt(0);
+                Integer grpId = grpCursor.getInt(6);
                 String grpName = grpCursor.getString(2);
                 Integer grpCapacity = grpCursor.getInt(3);
                 Boolean grpOnPerson;
@@ -123,10 +123,11 @@ public class DBAccess {
                     grpOnPerson = false;
                 }
                 Integer grpNextChildId = grpCursor.getInt(5);
+                Integer grpDbId = grpCursor.getInt(0); // Grab this to make updating easier later
 
-                InventoryData.ConcreteGroupData group = new InventoryData.ConcreteGroupData(grpId, grpName, grpCapacity, grpOnPerson, grpNextChildId);
+                InventoryData.ConcreteGroupData group = new InventoryData.ConcreteGroupData(grpId, grpName, grpCapacity, grpOnPerson, grpNextChildId, grpDbId);
 
-                String query2 = "SELECT * FROM items WHERE CONTAINER_ID = " + grpId;
+                String query2 = "SELECT * FROM items WHERE CONTAINER_ID = " + grpId + " ORDER BY LIST_ORDER ASC";
                 Cursor childCursor = database.rawQuery(query2, null);
 
                 List<AbstractInventoryData.ChildData> children = new ArrayList<>();
@@ -139,8 +140,9 @@ public class DBAccess {
                         String childDesc = childCursor.getString(4);
                         Integer childWeight = childCursor.getInt(5);
                         Integer childQuantity = childCursor.getInt(6);
+                        Integer childDbId = childCursor.getInt(0); // Grab  this to make updating easier later
 
-                        children.add(new InventoryData.ConcreteChildData(childId, childName, childDesc, childWeight, childQuantity));
+                        children.add(new InventoryData.ConcreteChildData(childId, childName, childDesc, childWeight, childQuantity, childDbId));
 
                         childCursor.moveToNext();
                     }
@@ -159,5 +161,14 @@ public class DBAccess {
         grpCursor.close();
 
         return data;
+    }
+
+    public void updateItemPoaition(Integer containerDbId, Integer itemDbId, Integer itemOrder) {
+        String sql = "UPDATE items SET CONTAINER_ID = " + containerDbId + ", LIST_ORDER = " + itemOrder + " WHERE ID = " + itemDbId;
+        database.execSQL(sql);
+    }
+
+    public void updateContainerPosition(Integer containerDbId, Integer containerOrder) {
+        String sql = "UPDATE container SET LIST_ORDER = " + containerOrder + " WHERE ID = " + containerDbId;
     }
 }
