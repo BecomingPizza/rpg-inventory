@@ -47,8 +47,8 @@ public class DBAccess {
         }
     }
 
-    public Integer insertCharacter (String name, String campaign) {
-        String sql = "INSERT INTO character (NAME, CAMPAIGN) VALUES ('" + name + "', '" + campaign + "')" ;
+    public Integer insertCharacter(String name, String campaign) {
+        String sql = "INSERT INTO character (NAME, CAMPAIGN) VALUES ('" + name + "', '" + campaign + "')";
         database.execSQL(sql);
 
         // Look up the ID we just added so we can use it
@@ -61,12 +61,12 @@ public class DBAccess {
         return id;
     }
 
-    public void updateCharacter (Integer id, String name, String campaign) {
+    public void updateCharacter(Integer id, String name, String campaign) {
         String sql = "UPDATE character SET NAME = '" + name + "', CAMPAIGN = '" + campaign + "' WHERE ID = " + id;
         database.execSQL(sql);
     }
 
-    public PlayerCharacter getCharacter (Integer id) {
+    public PlayerCharacter getCharacter(Integer id) {
         String sql = "SELECT * FROM character WHERE ID = " + id;
         Cursor cursor = database.rawQuery(sql, null);
         cursor.moveToFirst();
@@ -78,12 +78,12 @@ public class DBAccess {
         return pc;
     }
 
-    public void deleteCharacter (Integer id) {
+    public void deleteCharacter(Integer id) {
         String sql = "DELETE FROM character WHERE ID = " + id;
         database.execSQL(sql);
     }
 
-    public ArrayList<PlayerCharacter> getAllCharacters () {
+    public ArrayList<PlayerCharacter> getAllCharacters() {
         ArrayList<PlayerCharacter> pcs = new ArrayList<>();
 
         String sql = "SELECT * FROM character";
@@ -170,5 +170,16 @@ public class DBAccess {
 
     public void updateContainerPosition(Integer containerDbId, Integer containerOrder) {
         String sql = "UPDATE container SET LIST_ORDER = " + containerOrder + " WHERE ID = " + containerDbId;
+        database.execSQL(sql);
+    }
+
+    public void addContainer(Integer character_id, String name, Integer capacity, Integer onPerson, Integer nextChildId, Integer listOrder) {
+        String sql = "INSERT INTO container (CHARACTER_ID, NAME, CAPACITY, ON_PERSON, NEXT_CHILD_ID, LIST_ORDER) VALUES ('" + character_id + "', '" + name + "', '" + capacity + "', '" + onPerson + "', '" + nextChildId + "', '" + listOrder + "')";
+        database.execSQL(sql);
+    }
+
+    public void updateContainer(Integer dbId, String name, Integer capacity, Integer onPerson, Integer nextChildId, Integer listOrder) {
+        String sql = "UPDATE container SET NAME = '" + name + "', CAPACITY = " + capacity + ", ON_PERSON = " + onPerson + ", NEXT_CHILD_ID = " + nextChildId + ", LIST_ORDER = " + listOrder + " WHERE ID = " + dbId;
+        database.execSQL(sql);
     }
 }

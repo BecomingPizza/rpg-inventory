@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -64,7 +66,20 @@ public class InventoryFragment extends Fragment {
 
     private Menu iMenu;
 
-    Spinner spinner;
+    private Spinner spinner;
+
+    private Integer editingChildDbId;
+    private Integer editingChildPos;
+    private Integer editingGroupDbId;
+    private Integer editingGroupPos;
+
+    private EditText itemQuantityEditText;
+    private EditText containerCapacityEditText;
+    private EditText containerNameEditText;
+    private Switch containerOnPersonSwitch;
+    private EditText itemNameEditText;
+    private EditText itemDescEditText;
+    private EditText itemWeightEditText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -185,6 +200,15 @@ public class InventoryFragment extends Fragment {
         invRecyclerViewDragDropManager.attachRecyclerView(invRecyclerView);
         invRecyclerViewExpandableItemManager.attachRecyclerView(invRecyclerView);
 
+        // Get these fucking boxes
+        containerNameEditText = (EditText) v.findViewById(R.id.inventory_add_edit_container_name);
+        containerCapacityEditText = (EditText) v.findViewById(R.id.inventory_add_edit_container_capacity);
+        containerOnPersonSwitch = (Switch) v.findViewById(R.id.inventory_add_edit_container_on_person_switch);
+
+        itemNameEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_name);
+        itemDescEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_desc);
+        itemWeightEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_weight);
+        itemQuantityEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_quantity);
     }
 
     // Move to new PC fragment, either for editing or as a result of deleting
@@ -203,6 +227,24 @@ public class InventoryFragment extends Fragment {
 
         getActivity().setTitle(actionBarText);
 
+    }
+
+    private void restartInvFragment() {
+        InventoryFragment fragment = (InventoryFragment) getFragmentManager().findFragmentById(R.id.content_frame);
+
+        getFragmentManager().beginTransaction()
+                .detach(fragment)
+                .attach(fragment)
+                .commit();
+
+        // TODO: Close fancy menu thing here
+
+        // Check if no view has focus:
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     // Delete Current PC and go back to New PC page
@@ -258,27 +300,25 @@ public class InventoryFragment extends Fragment {
     private void clearItemView() {
 
         buildSpinner();
-        EditText itemNameEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_name);
-        EditText itemDescEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_desc);
-        EditText itemWeightEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_weight);
-        EditText itemQuantityEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_quantity);
 
         spinner.setSelection(0);
         itemNameEditText.setText(null);
         itemDescEditText.setText(null);
         itemWeightEditText.setText(null);
         itemQuantityEditText.setText(null);
+
+        editingChildPos = null;
+        editingChildDbId = null;
     }
 
     private void clearContainerView() {
 
-        EditText containerNameEditText = (EditText) v.findViewById(R.id.inventory_add_edit_container_name);
-        EditText containerCapacityEditText = (EditText) v.findViewById(R.id.inventory_add_edit_container_capacity);
-        Switch containerOnPersonSwitch = (Switch) v.findViewById(R.id.inventory_add_edit_container_on_person_switch);
-
         containerNameEditText.setText(null);
         containerCapacityEditText.setText(null);
         containerOnPersonSwitch.setChecked(true);
+
+        editingGroupPos = null;
+        editingGroupDbId = null;
     }
 
     public void editContainer(Integer pos) {
@@ -286,12 +326,12 @@ public class InventoryFragment extends Fragment {
         InventoryData.ConcreteGroupData group = (InventoryData.ConcreteGroupData) invData.getGroupItem(pos);
 
         // Populate fields
-        EditText containerNameEditText = (EditText) v.findViewById(R.id.inventory_add_edit_container_name);
-        EditText containerCapacityEditText = (EditText) v.findViewById(R.id.inventory_add_edit_container_capacity);
-        Switch containerOnPersonSwitch = (Switch) v.findViewById(R.id.inventory_add_edit_container_on_person_switch);
         containerNameEditText.setText(group.getText());
         containerCapacityEditText.setText(group.getCapacity().toString());
         containerOnPersonSwitch.setChecked(group.isOnPerson());
+
+        editingGroupPos = pos;
+        editingGroupDbId = group.getDbId();
 
         swapToContainerView();
     }
@@ -304,15 +344,14 @@ public class InventoryFragment extends Fragment {
         buildSpinner();
 
         // Populate fields
-        EditText itemNameEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_name);
-        EditText itemDescEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_desc);
-        EditText itemWeightEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_weight);
-        EditText itemQuantityEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_quantity);
         itemNameEditText.setText(child.getText());
         itemDescEditText.setText(child.getSubText());
         itemWeightEditText.setText(String.valueOf(child.getWeightPerUnit()));
         itemQuantityEditText.setText(child.getQuantity().toString());
+        spinner.setSelection(grpPos);
 
+        editingChildPos = childPos;
+        editingChildDbId = child.getDbId();
 
         swapToItemView();
     }
@@ -329,10 +368,29 @@ public class InventoryFragment extends Fragment {
     }
 
     private void saveContainer() {
-        // New or editing?
-        // Add to list
-        // Save to db
-        // Cheat and restart the fragment
+
+        // Get some stuff
+        String name = containerNameEditText.getText().toString();
+        Integer capacity = Integer.parseInt(containerCapacityEditText.getText().toString());
+        Integer onPerson = 1;
+        if (!containerOnPersonSwitch.isChecked()) { onPerson = 0; }
+
+        dbAccess.open();
+        if (editingGroupDbId == null) {
+            // Because am smart, will skip adding to existing list
+            Integer nextChildId = 0;
+            Integer listOrder = invData.getGroupCount();
+            dbAccess.addContainer(PCID, name, capacity, onPerson, nextChildId, listOrder);
+        } else {
+            InventoryData.ConcreteGroupData group = (InventoryData.ConcreteGroupData) invData.getGroupItem(editingGroupPos);
+            Integer nextChildId = group.getNextChildId();
+            Integer listOrder = editingGroupPos;
+            dbAccess.updateContainer(editingGroupDbId, name, capacity, onPerson, nextChildId, listOrder);
+        }
+
+        dbAccess.close();
+
+        restartInvFragment();
     }
 
     private void deleteContainer() {

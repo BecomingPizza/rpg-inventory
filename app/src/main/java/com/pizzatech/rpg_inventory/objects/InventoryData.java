@@ -245,6 +245,10 @@ public class InventoryData extends AbstractInventoryData {
             return mCapacity;
         }
 
+        public Integer getNextChildId() {
+            return mNextChildId;
+        }
+
         public boolean isOnPerson() {
             return mOnPerson;
         }
