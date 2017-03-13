@@ -26,6 +26,7 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.ViewAnimator;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.h6ah4i.android.widget.advrecyclerview.animator.GeneralItemAnimator;
 import com.h6ah4i.android.widget.advrecyclerview.animator.RefactoredDefaultItemAnimator;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager;
@@ -144,9 +145,12 @@ public class InventoryFragment extends Fragment {
         addItemBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Check we have containers!
-                clearItemView();
-                swapToItemView();
+                if (invData.getGroupCount() > 0) {
+                    clearItemView();
+                    swapToItemView();
+                } else {
+                    Toast.makeText(getActivity(), "Add a container first", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         addContainerBtn.setOnClickListener(new View.OnClickListener() {
@@ -237,9 +241,11 @@ public class InventoryFragment extends Fragment {
                 .attach(fragment)
                 .commit();
 
-        // TODO: Close fancy menu thing here
+        // collapse the fam
+        FloatingActionsMenu fam = (FloatingActionsMenu) v.findViewById(R.id.multiple_actions);
+        fam.collapse();
 
-        // Check if no view has focus:
+        // Close keyboard
         View view = getActivity().getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -257,6 +263,10 @@ public class InventoryFragment extends Fragment {
             public void onClick(DialogInterface dialogInterface, int i) {
                 dbAccess.open();
                 dbAccess.deleteCharacter(PCID);
+                for (int j = 0; j < invData.getGroupCount(); j++) {
+                    InventoryData.ConcreteGroupData grp = (InventoryData.ConcreteGroupData) invData.getGroupItem(j);
+                    dbAccess.deleteContainer(grp.getDbId());
+                }
                 dbAccess.close();
                 swapToNewPCFrag("New Character", -1);
                 Toast.makeText(v.getContext(), "Successfully deleted character", Toast.LENGTH_SHORT).show();
@@ -371,9 +381,14 @@ public class InventoryFragment extends Fragment {
 
         // Get some stuff
         String name = containerNameEditText.getText().toString();
-        Integer capacity = Integer.parseInt(containerCapacityEditText.getText().toString());
+        Integer capacity = 0;
+        if (!containerCapacityEditText.getText().toString().equals("")) {
+            capacity = Integer.parseInt(containerCapacityEditText.getText().toString());
+        }
         Integer onPerson = 1;
-        if (!containerOnPersonSwitch.isChecked()) { onPerson = 0; }
+        if (!containerOnPersonSwitch.isChecked()) {
+            onPerson = 0;
+        }
 
         dbAccess.open();
         if (editingGroupDbId == null) {
@@ -430,8 +445,16 @@ public class InventoryFragment extends Fragment {
         Integer listOrder = invData.getChildCount(spinner.getSelectedItemPosition());
         String name = itemNameEditText.getText().toString();
         String description = itemDescEditText.getText().toString();
-        double weight = Double.parseDouble(itemWeightEditText.getText().toString());
-        Integer quantity = Integer.parseInt(itemQuantityEditText.getText().toString());
+
+        double weight = 0.0;
+        if (!itemWeightEditText.getText().toString().equals("")) {
+            weight = Double.parseDouble(itemWeightEditText.getText().toString());
+        }
+
+        Integer quantity = 1;
+        if (!itemQuantityEditText.getText().toString().equals("")) {
+            quantity = Integer.parseInt(itemQuantityEditText.getText().toString());
+        }
 
         if (editingChildDbId == null) {
             dbAccess.addItem(listOrder, grpDbId, name, description, weight, quantity);
