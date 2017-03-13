@@ -394,22 +394,62 @@ public class InventoryFragment extends Fragment {
     }
 
     private void deleteContainer() {
-        // If not editing skip to end
-        // Warn that items will be lost
-        // Delete container & items from db
-        // Cheat and restart the fragment
+        if (editingGroupDbId != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Warning: This will delete items in the container!");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dbAccess.open();
+                    dbAccess.deleteContainer(editingGroupDbId);
+                    dbAccess.close();
+                    Toast.makeText(v.getContext(), "Successfully deleted container", Toast.LENGTH_SHORT).show();
+                    ((MainActivity) getActivity()).updateDrawer();
+                    restartInvFragment();
+                }
+            });
+            builder.setNegativeButton("NOT OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+        } else {
+            restartInvFragment();
+        }
     }
 
     private void saveItem() {
-        // New or editing?
-        // Save to db
-        // Cheat and restart the fragment
+        dbAccess.open();
+
+        InventoryData.ConcreteGroupData grp = (InventoryData.ConcreteGroupData) invData.getGroupItem(spinner.getSelectedItemPosition());
+        Integer grpDbId = grp.getDbId();
+        Integer listOrder = invData.getChildCount(spinner.getSelectedItemPosition());
+        String name = itemNameEditText.getText().toString();
+        String description = itemDescEditText.getText().toString();
+        double weight = Double.parseDouble(itemWeightEditText.getText().toString());
+        Integer quantity = Integer.parseInt(itemQuantityEditText.getText().toString());
+
+        if (editingChildDbId == null) {
+            dbAccess.addItem(listOrder, grpDbId, name, description, weight, quantity);
+        } else {
+            dbAccess.updateItem(editingChildDbId, listOrder, grpDbId, name, description, weight, quantity);
+        }
+
+        dbAccess.close();
+
+        restartInvFragment();
     }
 
     private void deleteItem() {
-        // If not editing skip to end
-        // Delete item from db
-        // Delete from list
-        // Cheat and restart the fragment
+        if (editingChildDbId != null) {
+            dbAccess.open();
+            dbAccess.deleteItem(editingChildDbId);
+            dbAccess.close();
+        }
+        restartInvFragment();
     }
 }

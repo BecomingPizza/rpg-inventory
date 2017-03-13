@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v4.util.Pair;
+import android.util.Log;
 
 import com.pizzatech.rpg_inventory.objects.AbstractInventoryData;
 import com.pizzatech.rpg_inventory.objects.InventoryData;
@@ -127,7 +128,7 @@ public class DBAccess {
 
                 InventoryData.ConcreteGroupData group = new InventoryData.ConcreteGroupData(grpId, grpName, grpCapacity, grpOnPerson, grpNextChildId, grpDbId);
 
-                String query2 = "SELECT * FROM items WHERE CONTAINER_ID = " + grpId + " ORDER BY LIST_ORDER ASC";
+                String query2 = "SELECT * FROM items WHERE CONTAINER_ID = " + grpDbId + " ORDER BY LIST_ORDER ASC";
                 Cursor childCursor = database.rawQuery(query2, null);
 
                 List<AbstractInventoryData.ChildData> children = new ArrayList<>();
@@ -138,11 +139,11 @@ public class DBAccess {
                         Integer childId = childCursor.getInt(1);
                         String childName = childCursor.getString(3);
                         String childDesc = childCursor.getString(4);
-                        Integer childWeight = childCursor.getInt(5);
+                        double childWeight = childCursor.getDouble(5);
                         Integer childQuantity = childCursor.getInt(6);
                         Integer childDbId = childCursor.getInt(0); // Grab  this to make updating easier later
 
-                        children.add(new InventoryData.ConcreteChildData(childId, childName, childDesc, childWeight, childQuantity, childDbId));
+                        children.add(new InventoryData.ConcreteChildData(childId, childName, childDesc, childQuantity, childWeight, childDbId));
 
                         childCursor.moveToNext();
                     }
@@ -174,12 +175,34 @@ public class DBAccess {
     }
 
     public void addContainer(Integer character_id, String name, Integer capacity, Integer onPerson, Integer nextChildId, Integer listOrder) {
-        String sql = "INSERT INTO container (CHARACTER_ID, NAME, CAPACITY, ON_PERSON, NEXT_CHILD_ID, LIST_ORDER) VALUES ('" + character_id + "', '" + name + "', '" + capacity + "', '" + onPerson + "', '" + nextChildId + "', '" + listOrder + "')";
+        String sql = "INSERT INTO container (CHARACTER_ID, NAME, CAPACITY, ON_PERSON, NEXT_CHILD_ID, LIST_ORDER) VALUES (" + character_id + ", '" + name + "', " + capacity + ", " + onPerson + ", " + nextChildId + ", " + listOrder + ")";
         database.execSQL(sql);
     }
 
     public void updateContainer(Integer dbId, String name, Integer capacity, Integer onPerson, Integer nextChildId, Integer listOrder) {
         String sql = "UPDATE container SET NAME = '" + name + "', CAPACITY = " + capacity + ", ON_PERSON = " + onPerson + ", NEXT_CHILD_ID = " + nextChildId + ", LIST_ORDER = " + listOrder + " WHERE ID = " + dbId;
+        database.execSQL(sql);
+    }
+
+    public void deleteContainer(Integer grpDbId) {
+        String sql = "DELETE FROM container WHERE ID = " + grpDbId;
+        database.execSQL(sql);
+        sql = "DELETE FROM items WHERE CONTAINER_ID = " + grpDbId;
+        database.execSQL(sql);
+    }
+
+    public void addItem(Integer listOrder, Integer grpDbId, String name, String description, Double weight, Integer quantity) {
+        String sql = "INSERT INTO items (LIST_ORDER, CONTAINER_ID, NAME, DESCRIPTION, WEIGHT, QUANTITY) VALUES (" + listOrder + ", " + grpDbId + ", '" + name + "', '" + description + "', " + weight + ", " + quantity + ")";
+        database.execSQL(sql);
+    }
+
+    public void updateItem(Integer childDbId, Integer listOrder, Integer grpDbId, String name, String description, Double weight, Integer quantity) {
+        String sql = "UPDATE items SET LIST_ORDER = " + listOrder + ", CONTAINER_ID = " + grpDbId + ", NAME = '" + name + "', DESCRIPTION = '" + description + "', WEIGHT = " + weight + ", QUANTITY = " + quantity + " WHERE ID = " + childDbId;
+        database.execSQL(sql);
+    }
+
+    public void deleteItem(Integer childDbId) {
+        String sql = "DELETE FROM items WHERE ID = " + childDbId;
         database.execSQL(sql);
     }
 }
