@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- NOTE: should use FrameLayout or RelativeLayout for parent of the "@id/container" view (for Android 2.3 compatibility) -->
-<FrameLayout
-    style="@style/commonListItemStyle"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!-- NOTE: should use FrameLayout or RelativeLayout for parent of the "@id/container" view (for Android 2.3 compatibility) -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/commonListItemStyle"
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_item2_height"
     android:layout_marginTop="2dp"
@@ -27,16 +25,66 @@
             android:layout_gravity="top|left"
             android:background="#20000000"
             android:clickable="true"
-            tools:ignore="RtlHardcoded"/>
+            tools:ignore="RtlHardcoded" />
 
-        <TextView
-            android:id="@+id/text1"
+        <LinearLayout
+            android:id="@+id/long_click_detector"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="top|left"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
-            android:gravity="center"/>
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="0.3">
+
+                <TextView
+                    android:id="@+id/text1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="48dp"
+                    android:layout_weight="0.6"
+                    android:textSize="18dp"
+                    android:gravity="center_vertical|left"/>
+
+                <TextView
+                    android:id="@+id/desc_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="48dp"
+                    android:layout_weight="0.4"
+                    android:maxLines="2"
+                    android:textSize="12dp"
+                    android:gravity="top|left"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="0.7">
+
+                <TextView
+                    android:id="@+id/quantity_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="12dp"
+                    android:layout_weight="0.5"
+                    android:textSize="14dp"
+                    android:gravity="center_vertical|right" />
+
+                <TextView
+                    android:id="@+id/weight_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="12dp"
+                    android:layout_weight="0.5"
+                    android:textSize="14dp"
+                    android:gravity="center_vertical|right"/>
+            </LinearLayout>
+
+        </LinearLayout>
 
     </FrameLayout>
 

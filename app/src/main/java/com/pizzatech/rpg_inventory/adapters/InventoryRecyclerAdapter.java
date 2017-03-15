@@ -96,9 +96,16 @@ public class InventoryRecyclerAdapter
     }
 
     public class MyChildViewHolder extends MyBaseViewHolder {
+
+        public TextView mDescTextView;
+        public TextView mQuantityTextView;
+        public TextView mWeightTextView;
+
         public MyChildViewHolder(View itemView) {
             super(itemView);
-
+            mDescTextView = (TextView) itemView.findViewById(R.id.desc_text_view);
+            mQuantityTextView = (TextView) itemView.findViewById(R.id.quantity_text_view);
+            mWeightTextView = (TextView) itemView.findViewById(R.id.weight_text_view);
         }
     }
 
@@ -277,12 +284,12 @@ public class InventoryRecyclerAdapter
     @Override
     public void onBindChildViewHolder(MyChildViewHolder holder, final int groupPosition, final int childPosition, int viewType) {
         // child item
-        final InventoryData.ChildData item = invData.getChildItem(groupPosition, childPosition);
+        final InventoryData.ConcreteChildData item = (InventoryData.ConcreteChildData) invData.getChildItem(groupPosition, childPosition);
 
         // set listeners
         // (if the item is *pinned*, click event comes to the itemView)
         holder.itemView.setOnClickListener(invItemViewOnClickListener);
-        holder.itemView.findViewById(R.id.text1).setOnLongClickListener(new View.OnLongClickListener() {
+        holder.mLongClickDetector.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 invFragment.editItem(groupPosition, childPosition);
@@ -292,6 +299,9 @@ public class InventoryRecyclerAdapter
 
         // set text
         holder.mTextView.setText(item.getText());
+        holder.mDescTextView.setText(item.getSubText());
+        holder.mQuantityTextView.setText("Quantity: " + item.getQuantity());
+        holder.mWeightTextView.setText("Weight: " + item.getTotalWeight() + " lbs");
 
         final int dragState = holder.getDragStateFlags();
 
