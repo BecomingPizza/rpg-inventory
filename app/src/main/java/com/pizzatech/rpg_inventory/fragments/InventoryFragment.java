@@ -39,6 +39,7 @@ import com.pizzatech.rpg_inventory.objects.InventoryData;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.pizzatech.rpg_inventory.MainActivity.dbAccess;
 

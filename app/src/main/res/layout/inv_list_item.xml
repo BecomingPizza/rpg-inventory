@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_item2_height"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="2dp"
     android:background="#ffffff">
 
 
@@ -22,7 +22,7 @@
         <!-- NOTE: the drag handle should set android:clickable=true not to propagate click events to the parent views -->
         <View
             android:id="@+id/drag_handle"
-            android:layout_width="32dp"
+            android:layout_width="36dp"
             android:layout_height="match_parent"
             android:layout_gravity="top|left"
             android:background="#20000000"
@@ -30,7 +30,7 @@
             tools:ignore="RtlHardcoded"/>
 
         <TextView
-            android:id="@android:id/text1"
+            android:id="@+id/text1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top|left"

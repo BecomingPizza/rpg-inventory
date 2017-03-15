@@ -3,6 +3,7 @@ package com.pizzatech.rpg_inventory.objects;
 import android.support.v4.util.Pair;
 
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
+import com.pizzatech.rpg_inventory.fragments.InventoryFragment;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -245,6 +246,11 @@ public class InventoryData extends AbstractInventoryData {
             return mCapacity;
         }
 
+        public String getCapacityText() {
+            String s = mCapacity.toString();
+            return s;
+        }
+
         public Integer getNextChildId() {
             return mNextChildId;
         }
@@ -318,7 +324,11 @@ public class InventoryData extends AbstractInventoryData {
         }
 
         public double getTotalWeight() {
-            return mQuantity * mWeightPerUnit;
+            if (mQuantity != 0 && mWeightPerUnit != 0) {
+                return mQuantity * mWeightPerUnit;
+            } else {
+                return 0;
+            }
         }
 
         public Integer getDbId() {

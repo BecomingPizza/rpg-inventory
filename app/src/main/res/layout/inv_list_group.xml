@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- NOTE: should use FrameLayout or RelativeLayout for parent of the "@id/container" view (for Android 2.3 compatibility) -->
-<FrameLayout
-    style="@style/commonListItemStyle"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!-- NOTE: should use FrameLayout or RelativeLayout for parent of the "@id/container" view (for Android 2.3 compatibility) -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/commonListItemStyle"
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_group_item_height"
     android:layout_marginTop="8dp"
@@ -20,28 +18,45 @@
         <!-- NOTE: the drag handle should set android:clickable=true not to propagate click events to the parent views -->
         <View
             android:id="@+id/drag_handle"
-            android:layout_width="32dp"
+            android:layout_width="36dp"
             android:layout_height="match_parent"
             android:layout_gravity="top|left"
             android:background="#20000000"
             android:clickable="true"
-            tools:ignore="RtlHardcoded"/>
+            tools:ignore="RtlHardcoded" />
 
-        <TextView
-            android:id="@android:id/text1"
+        <LinearLayout
+            android:id="@+id/long_click_detector"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="top|left"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:gravity="center"/>
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="48dp"
+                android:gravity="center_vertical|left"
+                android:layout_weight="0.5"
+                android:textSize="18dp"/>
+
+            <TextView
+                android:id="@+id/capacity_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:layout_marginRight="48dp"
+                android:gravity="center_vertical|right"
+                android:layout_weight="0.5"
+                android:textSize="18dp"/>
+        </LinearLayout>
 
         <com.pizzatech.rpg_inventory.widgets.ExpandableItemIndicator
             android:id="@+id/indicator"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="right|center_vertical"
-            android:layout_marginRight="16dp"/>
+            android:layout_marginRight="16dp" />
 
     </FrameLayout>
 

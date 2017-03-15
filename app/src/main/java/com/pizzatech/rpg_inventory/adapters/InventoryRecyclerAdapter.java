@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemConstants;
@@ -25,10 +26,12 @@ import com.pizzatech.rpg_inventory.utils.DrawableUtils;
 import com.pizzatech.rpg_inventory.utils.ViewUtils;
 import com.pizzatech.rpg_inventory.widgets.ExpandableItemIndicator;
 
+import org.w3c.dom.Text;
+
 
 /**
  * Created by Ashley on 29/01/2017.
- *
+ * <p>
  * Welcome to the most complicated adapter I have ever copied most of from somewhere else
  */
 
@@ -58,13 +61,15 @@ public class InventoryRecyclerAdapter
         public FrameLayout mContainer;
         public View mDragHandle;
         public TextView mTextView;
+        public LinearLayout mLongClickDetector;
         private int mExpandStateFlags;
 
         public MyBaseViewHolder(View v) {
             super(v);
             mContainer = (FrameLayout) v.findViewById(R.id.container);
             mDragHandle = v.findViewById(R.id.drag_handle);
-            mTextView = (TextView) v.findViewById(android.R.id.text1);
+            mTextView = (TextView) v.findViewById(R.id.text1);
+            mLongClickDetector = (LinearLayout) v.findViewById(R.id.long_click_detector);
         }
 
         @Override
@@ -80,11 +85,12 @@ public class InventoryRecyclerAdapter
 
     public class MyGroupViewHolder extends MyBaseViewHolder {
         public ExpandableItemIndicator indicator;
+        public TextView mGrpCapacityTextView;
 
         public MyGroupViewHolder(View itemView) {
             super(itemView);
             indicator = (ExpandableItemIndicator) itemView.findViewById(R.id.indicator);
-
+            mGrpCapacityTextView = (TextView) itemView.findViewById(R.id.capacity_text_view);
 
         }
     }
@@ -204,15 +210,16 @@ public class InventoryRecyclerAdapter
         return new MyChildViewHolder(v);
     }
 
+
     @Override
     public void onBindGroupViewHolder(MyGroupViewHolder holder, final int groupPosition, int viewType) {
         // group item
-        final InventoryData.GroupData item = invData.getGroupItem(groupPosition);
+        final InventoryData.ConcreteGroupData item = (InventoryData.ConcreteGroupData) invData.getGroupItem(groupPosition);
 
         // set listeners
         holder.itemView.setOnClickListener(invItemViewOnClickListener);
 
-        holder.itemView.findViewById(android.R.id.text1).setOnLongClickListener(new View.OnLongClickListener() {
+        holder.mLongClickDetector.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 invFragment.editContainer(groupPosition);
@@ -222,6 +229,16 @@ public class InventoryRecyclerAdapter
 
         // set text
         holder.mTextView.setText(item.getText());
+
+
+        double t = 0;
+        for (int i = 0; i < invData.getChildCount(groupPosition); i++) {
+            InventoryData.ConcreteChildData c = (InventoryData.ConcreteChildData) invData.getChildItem(groupPosition, i);
+            t += c.getTotalWeight();
+        }
+
+        String s = Double.toString(t) + " / " + item.getCapacityText() + " lbs";
+        holder.mGrpCapacityTextView.setText(s);
 
         // set background resource (target view ID: container)
         final int dragState = holder.getDragStateFlags();
@@ -265,7 +282,7 @@ public class InventoryRecyclerAdapter
         // set listeners
         // (if the item is *pinned*, click event comes to the itemView)
         holder.itemView.setOnClickListener(invItemViewOnClickListener);
-        holder.itemView.findViewById(android.R.id.text1).setOnLongClickListener(new View.OnLongClickListener() {
+        holder.itemView.findViewById(R.id.text1).setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 invFragment.editItem(groupPosition, childPosition);
