@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ViewAnimator;
@@ -35,7 +36,10 @@ import com.pizzatech.rpg_inventory.MainActivity;
 import com.pizzatech.rpg_inventory.R;
 import com.pizzatech.rpg_inventory.adapters.InventoryRecyclerAdapter;
 import com.pizzatech.rpg_inventory.objects.InventoryData;
+import com.pizzatech.rpg_inventory.objects.PlayerCharacter;
 
+
+import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -214,6 +218,25 @@ public class InventoryFragment extends Fragment {
         itemDescEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_desc);
         itemWeightEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_weight);
         itemQuantityEditText = (EditText) v.findViewById(R.id.inventory_add_edit_item_quantity);
+
+        // Set used capacity / total to misc textview for now
+        dbAccess.open();
+        PlayerCharacter pc = dbAccess.getCharacter(PCID);
+        dbAccess.close();
+
+        double t = 0;
+        for (int j = 0; j < invData.getGroupCount(); j++) {
+            InventoryData.ConcreteGroupData grp = (InventoryData.ConcreteGroupData) invData.getGroupItem(j);
+            if (grp.isOnPerson()) {
+                for (int i = 0; i < invData.getChildCount(j); i++) {
+                    InventoryData.ConcreteChildData c = (InventoryData.ConcreteChildData) invData.getChildItem(j, i);
+                    t += c.getTotalWeight();
+                }
+            }
+        }
+
+        String s = Double.toString(t) + " / " + pc.getMaxCarry().toString() + " lbs";
+        ((TextView) v.findViewById(R.id.misc_text_view)).setText(s);
     }
 
     // Move to new PC fragment, either for editing or as a result of deleting
@@ -382,31 +405,35 @@ public class InventoryFragment extends Fragment {
 
         // Get some stuff
         String name = containerNameEditText.getText().toString();
-        Integer capacity = 0;
-        if (!containerCapacityEditText.getText().toString().equals("")) {
-            capacity = Integer.parseInt(containerCapacityEditText.getText().toString());
-        }
-        Integer onPerson = 1;
-        if (!containerOnPersonSwitch.isChecked()) {
-            onPerson = 0;
-        }
-
-        dbAccess.open();
-        if (editingGroupDbId == null) {
-            // Because am smart, will skip adding to existing list
-            Integer nextChildId = 0;
-            Integer listOrder = invData.getGroupCount();
-            dbAccess.addContainer(PCID, name, capacity, onPerson, nextChildId, listOrder);
+        if (name.isEmpty()) {
+            Toast.makeText(getActivity(), "Enter a Name for the container", Toast.LENGTH_SHORT).show();
         } else {
-            InventoryData.ConcreteGroupData group = (InventoryData.ConcreteGroupData) invData.getGroupItem(editingGroupPos);
-            Integer nextChildId = group.getNextChildId();
-            Integer listOrder = editingGroupPos;
-            dbAccess.updateContainer(editingGroupDbId, name, capacity, onPerson, nextChildId, listOrder);
+            Integer capacity = 0;
+            if (!containerCapacityEditText.getText().toString().equals("")) {
+                capacity = Integer.parseInt(containerCapacityEditText.getText().toString());
+            }
+            Integer onPerson = 1;
+            if (!containerOnPersonSwitch.isChecked()) {
+                onPerson = 0;
+            }
+
+            dbAccess.open();
+            if (editingGroupDbId == null) {
+                // Because am smart, will skip adding to existing list
+                Integer nextChildId = 0;
+                Integer listOrder = invData.getGroupCount();
+                dbAccess.addContainer(PCID, name, capacity, onPerson, nextChildId, listOrder);
+            } else {
+                InventoryData.ConcreteGroupData group = (InventoryData.ConcreteGroupData) invData.getGroupItem(editingGroupPos);
+                Integer nextChildId = group.getNextChildId();
+                Integer listOrder = editingGroupPos;
+                dbAccess.updateContainer(editingGroupDbId, name, capacity, onPerson, nextChildId, listOrder);
+            }
+
+            dbAccess.close();
+
+            restartInvFragment();
         }
-
-        dbAccess.close();
-
-        restartInvFragment();
     }
 
     private void deleteContainer() {
@@ -439,33 +466,40 @@ public class InventoryFragment extends Fragment {
     }
 
     private void saveItem() {
-        dbAccess.open();
 
-        InventoryData.ConcreteGroupData grp = (InventoryData.ConcreteGroupData) invData.getGroupItem(spinner.getSelectedItemPosition());
-        Integer grpDbId = grp.getDbId();
-        Integer listOrder = invData.getChildCount(spinner.getSelectedItemPosition());
         String name = itemNameEditText.getText().toString();
-        String description = itemDescEditText.getText().toString();
 
-        double weight = 0.0;
-        if (!itemWeightEditText.getText().toString().equals("")) {
-            weight = Double.parseDouble(itemWeightEditText.getText().toString());
-        }
-
-        Integer quantity = 1;
-        if (!itemQuantityEditText.getText().toString().equals("")) {
-            quantity = Integer.parseInt(itemQuantityEditText.getText().toString());
-        }
-
-        if (editingChildDbId == null) {
-            dbAccess.addItem(listOrder, grpDbId, name, description, weight, quantity);
+        if (name.isEmpty()) {
+            Toast.makeText(getActivity(), "Enter a Name for the item", Toast.LENGTH_SHORT).show();
         } else {
-            dbAccess.updateItem(editingChildDbId, listOrder, grpDbId, name, description, weight, quantity);
+
+            dbAccess.open();
+
+            InventoryData.ConcreteGroupData grp = (InventoryData.ConcreteGroupData) invData.getGroupItem(spinner.getSelectedItemPosition());
+            Integer grpDbId = grp.getDbId();
+            Integer listOrder = invData.getChildCount(spinner.getSelectedItemPosition());
+            String description = itemDescEditText.getText().toString();
+
+            double weight = 0.0;
+            if (!itemWeightEditText.getText().toString().equals("")) {
+                weight = Double.parseDouble(itemWeightEditText.getText().toString());
+            }
+
+            Integer quantity = 1;
+            if (!itemQuantityEditText.getText().toString().equals("")) {
+                quantity = Integer.parseInt(itemQuantityEditText.getText().toString());
+            }
+
+            if (editingChildDbId == null) {
+                dbAccess.addItem(listOrder, grpDbId, name, description, weight, quantity);
+            } else {
+                dbAccess.updateItem(editingChildDbId, listOrder, grpDbId, name, description, weight, quantity);
+            }
+
+            dbAccess.close();
+
+            restartInvFragment();
         }
-
-        dbAccess.close();
-
-        restartInvFragment();
     }
 
     private void deleteItem() {

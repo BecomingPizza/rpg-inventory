@@ -38,6 +38,7 @@ public class NewPCFragment extends Fragment {
 
     EditText nameEditText;
     EditText campaignEditText;
+    EditText maxCarryEditText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,6 +54,7 @@ public class NewPCFragment extends Fragment {
 
         nameEditText = (EditText) v.findViewById(R.id.new_pc_name_edit_text);
         campaignEditText = (EditText) v.findViewById(R.id.new_pc_campaign_edit_text);
+        maxCarryEditText = (EditText) v.findViewById(R.id.new_pc_max_carry_edit_text);
 
         // Get ID to work on
         Bundle bundaru = getArguments();
@@ -65,6 +67,7 @@ public class NewPCFragment extends Fragment {
             dbAccess.close();
             nameEditText.setText(currentPC.getName(), TextView.BufferType.EDITABLE);
             campaignEditText.setText(currentPC.getCampaign(), TextView.BufferType.EDITABLE);
+            maxCarryEditText.setText(currentPC.getMaxCarry().toString(), TextView.BufferType.EDITABLE);
         }
 
         // Set listener on confirmBtn
@@ -83,16 +86,17 @@ public class NewPCFragment extends Fragment {
 
         String name = nameEditText.getText().toString();
         String campaign = campaignEditText.getText().toString();
+        Integer maxCarry = Integer.parseInt(maxCarryEditText.getText().toString());
 
         if (!name.isEmpty()) {
 
             dbAccess.open();
 
             if (!PCID.equals(-1)) {
-                dbAccess.updateCharacter(PCID, name, campaign);
+                dbAccess.updateCharacter(PCID, name, campaign, maxCarry);
                 Toast.makeText(v.getContext(), "Character successfully edited", Toast.LENGTH_SHORT).show();
             } else {
-                PCID = dbAccess.insertCharacter(name, campaign);
+                PCID = dbAccess.insertCharacter(name, campaign, maxCarry);
                 Toast.makeText(v.getContext(), "Character successfully added", Toast.LENGTH_SHORT).show();
             }
 

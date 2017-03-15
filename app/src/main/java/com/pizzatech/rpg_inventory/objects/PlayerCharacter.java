@@ -10,14 +10,14 @@ public class PlayerCharacter {
     private Integer id;
     private String name;
     private String campaign;
+    private Integer maxCarry;
 
-    // TODO: Add player total capacity
-
-    public PlayerCharacter(Integer id, String name, String campaign) {
+    public PlayerCharacter(Integer id, String name, String campaign, Integer maxCarry) {
         super();
         this.id = id;
         this.name = name;
         this.campaign = campaign;
+        this.maxCarry = maxCarry;
     }
 
     public Integer getId () {
@@ -30,5 +30,9 @@ public class PlayerCharacter {
 
     public String getCampaign () {
         return campaign;
+    }
+
+    public Integer getMaxCarry () {
+        return maxCarry;
     }
 }

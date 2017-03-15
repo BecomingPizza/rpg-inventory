@@ -48,8 +48,8 @@ public class DBAccess {
         }
     }
 
-    public Integer insertCharacter(String name, String campaign) {
-        String sql = "INSERT INTO character (NAME, CAMPAIGN) VALUES ('" + name + "', '" + campaign + "')";
+    public Integer insertCharacter(String name, String campaign, Integer maxCarry) {
+        String sql = "INSERT INTO character (NAME, CAMPAIGN, CAPACITY) VALUES ('" + name + "', '" + campaign + "', " + maxCarry + ")";
         database.execSQL(sql);
 
         // Look up the ID we just added so we can use it
@@ -59,11 +59,21 @@ public class DBAccess {
         Integer id = cursor.getInt(0);
         cursor.close();
 
+        // Add some sample data
+        String pocketsSQL = "INSERT INTO container (CHARACTER_ID, NAME, CAPACITY, ON_PERSON, NEXT_CHILD_ID, LIST_ORDER) VALUES (" + id + ", 'Pockets', 2, 1, 1, 0)";
+        database.execSQL(pocketsSQL);
+        String pocketsIdQuery = "SELECT ID FROM container WHERE CHARACTER_ID = " + id;
+        Cursor pocketsCursor = database.rawQuery(pocketsIdQuery, null);
+        pocketsCursor.moveToFirst();
+        Integer pocketsId = pocketsCursor.getInt(0);
+        String lintSQL = "INSERT INTO items (LIST_ORDER, CONTAINER_ID, NAME, DESCRIPTION, WEIGHT, QUANTITY) VALUES (0, " + pocketsId + ", 'Lint', 'Pocket fluff', 0.01, 7)";
+        database.execSQL(lintSQL);
+
         return id;
     }
 
-    public void updateCharacter(Integer id, String name, String campaign) {
-        String sql = "UPDATE character SET NAME = '" + name + "', CAMPAIGN = '" + campaign + "' WHERE ID = " + id;
+    public void updateCharacter(Integer id, String name, String campaign, Integer maxCarry) {
+        String sql = "UPDATE character SET NAME = '" + name + "', CAMPAIGN = '" + campaign + "', CAPACITY = " + maxCarry + " WHERE ID = " + id;
         database.execSQL(sql);
     }
 
@@ -73,9 +83,10 @@ public class DBAccess {
         cursor.moveToFirst();
         String name = cursor.getString(1);
         String campaign = cursor.getString(2);
+        Integer maxCarry = cursor.getInt(3);
         cursor.close();
 
-        PlayerCharacter pc = new PlayerCharacter(id, name, campaign);
+        PlayerCharacter pc = new PlayerCharacter(id, name, campaign, maxCarry);
         return pc;
     }
 
@@ -92,7 +103,7 @@ public class DBAccess {
 
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
-                PlayerCharacter pc = new PlayerCharacter(cursor.getInt(0), cursor.getString(1), cursor.getString(2));
+                PlayerCharacter pc = new PlayerCharacter(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3));
                 pcs.add(pc);
                 cursor.moveToNext();
             }

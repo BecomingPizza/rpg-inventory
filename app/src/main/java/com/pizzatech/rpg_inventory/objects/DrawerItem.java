@@ -4,7 +4,6 @@ import android.app.Fragment;
 
 /**
  * Created by Ashley on 01/10/2016.
- *
  */
 
 public class DrawerItem {
@@ -32,31 +31,29 @@ public class DrawerItem {
         this.PCId = pc;
         this.campaign = campaign;
     }
-    public int getImg () {
+
+    public int getImg() {
         return img;
     }
 
-    public String getActionBarStr () {
-        if (!campaign.equals("")) {
-            return str + " (" + campaign + ")";
-        } else {
-            return str;
-        }
+    public String getActionBarStr() {
+        return str;
+
     }
 
-    public String getStr () {
+    public String getStr() {
         return str;
     }
 
-    public String getFragType () {
+    public String getFragType() {
         return fragType;
     }
 
-    public Integer getPCId () {
+    public Integer getPCId() {
         return PCId;
     }
 
-    public String getCampaign () {
+    public String getCampaign() {
         return campaign;
     }
 }
