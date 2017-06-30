@@ -148,6 +148,8 @@ public class MainActivity extends AppCompatActivity {
         leftDrawerLayout.closeDrawer(leftDrawerList);
     }
 
+    // HI
+
     @Override
     public void setTitle(CharSequence title) {
         getSupportActionBar().setTitle(title);
